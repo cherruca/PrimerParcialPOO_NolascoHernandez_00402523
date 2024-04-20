@@ -5,8 +5,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        int opcion;
-        int producto_tipo;
+        int opcion, producto_tipo, consulta_numero;
         List<Producto> listado = new ArrayList<Producto>();
 
         Scanner sc = new Scanner(System.in);
@@ -21,7 +20,7 @@ public class Main {
                 if (producto_tipo == 1) {
                     agregar_telefono(sc, listado);
                 } else if (producto_tipo == 2) {
-                    System.out.println("LAPTOPPPPP");
+                    agregar_laptop(sc, listado);
                 } else {
                     System.out.println(producto_tipo);
                     System.out.println("ERROR: selecciones un tipo de producto válido");
@@ -29,6 +28,17 @@ public class Main {
                 }
             } else if (opcion == 2) {
                 System.out.println("\r=== MODIFICAR (cambiar precio) ===\n\r\r");
+                System.out.println("Ingrese código de producto a modificar: ");
+                consulta_numero = sc.nextInt();
+                sc.nextLine();
+                if (buscar_producto(consulta_numero, listado) != null) {
+                    System.out.println("Modificando producto No. " + buscar_producto(consulta_numero, listado).getCodigo());
+                    System.out.println("Ingrese nuevo precio: ");
+                    buscar_producto(consulta_numero, listado).setPrecio(sc.nextDouble());
+                    System.out.println("PRECIO MODIFICADO");
+                } else {
+                    System.out.println("ERROR: producto no encontrado");
+                }
             } else if (opcion == 3) {
                 System.out.println("\r=== LISTADO DE TODOS LOS PRODUCTOS ===\n\r\r");
                 consultar_todos_productos(listado);
@@ -67,18 +77,59 @@ public class Main {
 
 
         productos.add(nuevo_telefono);
-        System.out.println("TELEFONO AGREGADO\nCódigo: " + nuevo_telefono.getCodigo() + "\nNombre: " + nuevo_telefono.getNombre());
+        System.out.println("TELEFONO AGREGADO\nCódigo: " + nuevo_telefono.getCodigo() + "\nNombre: " + nuevo_telefono.getNombre() + "\nPrecio (con cargo de plan por 12 meses): $" + nuevo_telefono.getPrecio());
+
+    }
+
+    public static void agregar_laptop(Scanner sc, List<Producto> productos) {
+        Laptop nueva_laptop = new Laptop();
+
+        System.out.println("\r\r=== AGREGANDO LAPTOP ===");
+        nueva_laptop.setTipo("laptop");
+        System.out.println("Nombre: ");
+        nueva_laptop.setNombre(String.valueOf(sc.next()));
+        sc.nextLine();
+        System.out.println("Modelo: ");
+        nueva_laptop.setModelo(sc.next());
+        sc.nextLine();
+        System.out.println("Procesador: ");
+        nueva_laptop.setProcesador(sc.next());
+        sc.nextLine();
+        System.out.println("Precio: ");
+        nueva_laptop.setPrecio(sc.nextDouble());
+        sc.nextLine();
+        // NO se suma algo al precio original del producto
+//        nueva_laptop.setPrecio(nueva_laptop.obtener_precio(0));
+        // se concatenan los atributos que pertenecen a la laptop (procesador) y se agregan a la descripcion del producto
+        StringBuilder sb = new StringBuilder().append("Procesador ").append(nueva_laptop.getProcesador()).append(". ");
+        nueva_laptop.setDescripcion(String.valueOf(sb));
+
+
+        productos.add(nueva_laptop);
+        System.out.println("LAPTOP AGREGADA\nCódigo: " + nueva_laptop.getCodigo() + "\nNombre: " + nueva_laptop.getNombre() + "\nPrecio: $" + nueva_laptop.getPrecio());
 
     }
 
     public static void consultar_todos_productos(List<Producto> productos) {
         for (Producto producto : productos) {
             System.out.println("CÓDIGO: " + producto.getCodigo()
+                    + " - TIPO: " + producto.getTipo()
                     + " - NOMBRE: " + producto.getNombre()
                     + " - MODELO: " + producto.getModelo()
                     + " - DESCRIPCION: " + producto.obtener_descripcion(producto.getDescripcion())
                     + " - PRECIO: $" + producto.getPrecio()
                     + "\n---");
         }
+    }
+
+
+
+    public static Producto buscar_producto(int consulta_numero, List<Producto> productos) {
+        for(Producto producto : productos) {
+            if(producto.getCodigo() == consulta_numero) {
+                return producto;
+            }
+        }
+        return null;
     }
 }
